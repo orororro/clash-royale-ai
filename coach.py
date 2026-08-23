@@ -3,7 +3,7 @@ import requests
 import json
 
 class LLMCoach:
-    def __init__(self, api_key=None, base_url="http://localhost:20128/v1", model_name="nousresearch/hermes-3-llama-3.1-8b", model=None):
+    def __init__(self, api_key=None, base_url="http://localhost:20128/v1", model_name="gemini-3.1-flash-lite", model=None):
         # Gunakan API key dari argumen atau environment variable
         self.api_key = api_key or os.environ.get("ROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY") or "9router"
         self.base_url = base_url

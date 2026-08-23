@@ -247,10 +247,15 @@ class ArenaEnv(gym.Env):
             if self.agent_elixir >= cost and pos_y >= 16.0:
                 self.agent_elixir -= cost
                 self._spawn_unit(card_type, pos_x + 0.5, pos_y + 0.5, team="agent")
-                reward += 1.0  # Small incentive for valid deployment
+                reward += 5.0  # Reward positif saat berhasil drop unit
             else:
-                # Penalty for illegal placement or insufficient elixir
-                reward -= 5.0
+                # Jika Elixir tidak cukup atau illegal, ubah aksi jadi Wait otomatis
+                card_type = 0
+                
+        # Evaluasi Wait action (Leaking Penalty)
+        if card_type == 0:
+            if self.agent_elixir >= 10.0:
+                reward -= 0.1  # Penalti bocor elixir agar tidak terus-terusan diam
                 
         # 3. Simple Enemy AI logic
         if self.enemy_elixir >= 3.0 and np.random.rand() < 0.15:
@@ -281,6 +286,8 @@ class ArenaEnv(gym.Env):
                     
                     if unit.team == "agent":
                         damage_dealt += unit.damage
+                        if isinstance(target, Tower):
+                            reward += unit.damage * 0.1  # Reward ekstra proporsional jika nyerang tower musuh
                     else:
                         damage_taken += unit.damage
                         

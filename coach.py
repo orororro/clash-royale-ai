@@ -43,8 +43,9 @@ class LLMCoach:
         payload = {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.1,
-            "max_tokens": 10
+            "temperature": 0.2,
+            "max_tokens": 10,
+            "stream": False
         }
         
         try:

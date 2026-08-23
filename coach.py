@@ -48,22 +48,20 @@ class LLMCoach:
         }
         
         try:
-            # Sediakan fallback mechanism jika timeout/gagal
-            response = requests.post(self.endpoint, headers=headers, json=payload, timeout=5.0)
-            if response.status_code == 200:
-                data = response.json()
-                reply = data['choices'][0]['message']['content'].strip().upper()
-                
-                if "AGGRESSIVE" in reply:
-                    return "AGGRESSIVE"
-                elif "DEFENSIVE" in reply:
-                    return "DEFENSIVE"
-                else:
-                    return "BALANCED"
+            url = self.base_url.rstrip('/') + '/chat/completions'
+            res = requests.post(url, headers=headers, json=payload, timeout=10)
+            
+            if res.status_code == 200:
+                try:
+                    data = res.json()
+                    mode = data['choices'][0]['message']['content'].strip().upper()
+                    return mode if mode in ['AGGRESSIVE', 'DEFENSIVE', 'BALANCED'] else 'BALANCED'
+                except Exception as e:
+                    print(f'[Coach Error] Gagal parse JSON: {res.text}')
+                    return 'BALANCED'
             else:
-                print(f"[Coach] API Error ({response.status_code}), fallback to BALANCED.")
-                return "BALANCED"
-                
+                print(f'[Coach HTTP Error {res.status_code}]: {res.text}')
+                return 'BALANCED'
         except requests.exceptions.RequestException as e:
             print(f"[Coach] Connection error: {e}, fallback to BALANCED.")
             return "BALANCED"

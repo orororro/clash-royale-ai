@@ -16,7 +16,7 @@ def play():
     
     # 1. Inisialisasi Environment dengan mode render Pygame
     env = ArenaEnv(render_mode="human")
-    coach = LLMCoach()
+    coach = LLMCoach(model_name="gemini-3.1-flash-lite")
     
     # 2. Muat model terlatih
     model = PPO.load("clash_2d_ppo")
@@ -38,7 +38,7 @@ def play():
             if step_count % 30 == 0:
                 player_hp = (env.agent_tower_l.hp + env.agent_tower_r.hp) / 2.0
                 enemy_hp = (env.enemy_tower_l.hp + env.enemy_tower_r.hp) / 2.0
-                strategy = coach.get_strategy(player_hp, enemy_hp, env.agent_elixir, env.current_step)
+                strategy = coach.get_macro_strategy(player_hp, enemy_hp, env.agent_elixir, env.current_step)
                 env.set_strategy_mode(strategy)
                 print(f"[COACH] Mode Strategi -> {strategy}")
                 

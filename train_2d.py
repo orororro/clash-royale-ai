@@ -1,7 +1,7 @@
 import os
 import time
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
+from stable_baselines3.common.callbacks import BaseCallback
 from arena_env import ArenaEnv
 from coach import LLMCoach
 
@@ -9,7 +9,7 @@ class MacroStrategyCallback(BaseCallback):
     """
     Callback untuk memperbarui mode strategi makro secara periodik selama training 2D.
     """
-    def __init__(self, coach, update_freq=100, verbose=0):
+    def __init__(self, coach, update_freq=200, verbose=0):
         super(MacroStrategyCallback, self).__init__(verbose)
         self.coach = coach
         self.update_freq = update_freq
@@ -25,7 +25,7 @@ class MacroStrategyCallback(BaseCallback):
             current_step = env.current_step
             
             # Tentukan strategi dari Coach
-            strategy = self.coach.get_strategy(player_hp, enemy_hp, elixir, current_step)
+            strategy = self.coach.get_macro_strategy(player_hp, enemy_hp, elixir, current_step)
             env.set_strategy_mode(strategy)
             
             if self.verbose > 0:
@@ -38,7 +38,7 @@ def train():
     
     # 1. Inisialisasi Environment tanpa render (Headless mode)
     env = ArenaEnv(render_mode=None)
-    coach = LLMCoach()
+    coach = LLMCoach(model_name="gemini-3.1-flash-lite")
     
     # 2. Setup Model PPO
     # Menggunakan MultiDiscrete action space dengan arsitektur MlpPolicy
@@ -54,7 +54,6 @@ def train():
         gae_lambda=0.95,
         clip_range=0.2,
         ent_coef=0.01,
-        tensorboard_log="./tensorboard_2d/"
     )
     
     # 3. Setup Callbacks

@@ -1,13 +1,19 @@
+import os
 import requests
 import json
 
 class LLMCoach:
-    def __init__(self, api_key="9router", base_url="http://localhost:20128/v1", model="default"):
-        self.api_key = api_key
+    def __init__(self, api_key=None, base_url="http://localhost:20128/v1", model_name="gemini-3.1-flash-lite", model=None):
+        # Gunakan API key dari argumen atau environment variable
+        self.api_key = api_key or os.environ.get("ROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY") or "9router"
         self.base_url = base_url
         self.endpoint = f"{base_url.rstrip('/')}/chat/completions"
-        self.model = model
+        self.model = model or model_name
         
+    def get_macro_strategy(self, player_hp, enemy_hp, elixir, current_step):
+        """Alias untuk get_strategy."""
+        return self.get_strategy(player_hp, enemy_hp, elixir, current_step)
+
     def get_strategy(self, player_hp, enemy_hp, elixir, current_step):
         """
         Mengirim ringkasan match dan mengembalikan strategi makro.

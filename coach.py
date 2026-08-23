@@ -3,7 +3,7 @@ import requests
 import json
 
 class LLMCoach:
-    def __init__(self, api_key=None, base_url="http://localhost:20128/v1", model_name="gemini-3.1-flash-lite", model=None):
+    def __init__(self, api_key=None, base_url="http://localhost:20128/v1", model_name="nousresearch/hermes-3-llama-3.1-8b", model=None):
         # Gunakan API key dari argumen atau environment variable
         self.api_key = api_key or os.environ.get("ROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY") or "9router"
         self.base_url = base_url
@@ -32,7 +32,9 @@ class LLMCoach:
         - DEFENSIVE: Fokus bertahan jika HP pemain rendah atau tertinggal.
         - BALANCED: Seimbang antara menyerang dan bertahan.
         
-        Berikan jawaban HANYA dengan satu kata: AGGRESSIVE, DEFENSIVE, atau BALANCED.
+        Berikan jawaban HANYA dalam format JSON dengan struktur yang tepat seperti ini:
+        {{"strategy": "AGGRESSIVE"}}
+        Pastikan nilainya hanya salah satu dari AGGRESSIVE, DEFENSIVE, atau BALANCED.
         """
         
         headers = {
@@ -44,8 +46,9 @@ class LLMCoach:
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.2,
-            "max_tokens": 10,
-            "stream": False
+            "max_tokens": 50,
+            "stream": False,
+            "response_format": {"type": "json_object"}
         }
         
         try:
@@ -55,10 +58,13 @@ class LLMCoach:
             if res.status_code == 200:
                 try:
                     data = res.json()
-                    mode = data['choices'][0]['message']['content'].strip().upper()
+                    content = data['choices'][0]['message']['content'].strip()
+                    # Parse JSON struct
+                    json_res = json.loads(content)
+                    mode = json_res.get('strategy', '').strip().upper()
                     return mode if mode in ['AGGRESSIVE', 'DEFENSIVE', 'BALANCED'] else 'BALANCED'
                 except Exception as e:
-                    print(f'[Coach Error] Gagal parse JSON: {res.text}')
+                    print(f'[Coach Error] Gagal parse output JSON struktur: {res.text} | Exception: {e}')
                     return 'BALANCED'
             else:
                 print(f'[Coach HTTP Error {res.status_code}]: {res.text}')

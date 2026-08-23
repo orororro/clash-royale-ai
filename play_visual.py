@@ -19,7 +19,7 @@ def play():
     coach = LLMCoach(
         api_key="sk-1d47fd2534d0197b-8whljv-cfeeba41",
         base_url="http://localhost:20128/v1",
-        model_name="gemini-3.1-flash-lite"
+        model_name="nousresearch/hermes-3-llama-3.1-8b"
     )
     
     # 2. Muat model terlatih

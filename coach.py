@@ -2,9 +2,10 @@ import requests
 import json
 
 class LLMCoach:
-    def __init__(self, api_key="dummy_key", endpoint="https://openrouter.ai/api/v1/chat/completions", model="meta-llama/llama-3.8b-instruct"):
+    def __init__(self, api_key="9router", base_url="http://localhost:20128/v1", model="default"):
         self.api_key = api_key
-        self.endpoint = endpoint
+        self.base_url = base_url
+        self.endpoint = f"{base_url.rstrip('/')}/chat/completions"
         self.model = model
         
     def get_strategy(self, player_hp, enemy_hp, elixir, current_step):

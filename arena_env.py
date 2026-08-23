@@ -453,7 +453,7 @@ class ArenaEnv(gym.Env):
             pygame.draw.rect(self.screen, (0, 255, 50), (u_x - 10, u_y - u_radius - 6, int(u_bar_w * u_hp_pct), u_bar_h))
             
         # Top HUD Info Overlay
-        hud_bg = pygame.Surface((width, 36), pygame.SRCALPHA)
+        hud_bg = pygame.Surface((width, 52), pygame.SRCALPHA)
         hud_bg.fill((0, 0, 0, 160))
         self.screen.blit(hud_bg, (0, 0))
         
@@ -464,6 +464,14 @@ class ArenaEnv(gym.Env):
         elixir_text = f"Agent Elixir: {self.agent_elixir:.1f} | Enemy: {self.enemy_elixir:.1f}"
         elixir_surf = self.font.render(elixir_text, True, (255, 220, 50))
         self.screen.blit(elixir_surf, (8, 20))
+        
+        # Tambahan info untuk Live Training (Total Timesteps & Reward)
+        c_ts = getattr(self, 'custom_timesteps', 0)
+        c_rew = getattr(self, 'custom_reward', 0.0)
+        if c_ts > 0 or c_rew != 0.0:
+            tr_text = f"Total TS: {c_ts} | Cur Reward: {c_rew:.1f}"
+            tr_surf = self.font.render(tr_text, True, (0, 255, 255))
+            self.screen.blit(tr_surf, (8, 36))
         
         if self.render_mode == "human":
             pygame.event.pump()

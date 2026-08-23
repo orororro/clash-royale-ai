@@ -38,7 +38,11 @@ def train():
     
     # 1. Inisialisasi Environment tanpa render (Headless mode)
     env = ArenaEnv(render_mode=None)
-    coach = LLMCoach(model_name="gemini-3.1-flash-lite")
+    coach = LLMCoach(
+        api_key="sk-1d47fd2534d0197b-8whljv-cfeeba41",
+        base_url="http://localhost:20128/v1",
+        model_name="gemini-3.1-flash-lite"
+    )
     
     # 2. Setup Model PPO
     # Menggunakan MultiDiscrete action space dengan arsitektur MlpPolicy
